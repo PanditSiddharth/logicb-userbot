@@ -10,7 +10,12 @@ import keep_alive from './keep_alive';
 import SEASON from './secret';
 import start from './start';
 import { T } from './helpers';
-const season = process.env.SEASON || SEASON
+
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const season = process.env.SEASON 
 // keep_alive()
 const stringSession = new StringSession(season);
 export const sleep = (t: number | undefined) => new Promise((resolve) => setTimeout(resolve, t));
@@ -35,6 +40,7 @@ export const sleep = (t: number | undefined) => new Promise((resolve) => setTime
     phoneCode: async () =>
       await input.text("Please enter the code you received: "),
     onError: (err: Error) => console.log(err),
+    // botAuthToken: "5918588428:AAFe5Zvg9D3GQHCyt_W0NAHGoOJtXvB1tW8",
   });
   console.log("You should now be connected.");
                       console.log(client.session.save());
@@ -49,8 +55,9 @@ export const sleep = (t: number | undefined) => new Promise((resolve) => setTime
           let s = (i % 60).toString().padStart(2, '0')
           let m = (Math.floor(i / 60) % 60).toString().padStart(2, '0')
           let h = (Math.floor(Math.floor(i / 60) / 60)).toString().padStart(2, '0')
-          upt = { h, m, s, strt: '*'};
+          upt = { h, m, s, strt: '/'};
           await sleep(1000);
+         
         }
       };
       itrc();

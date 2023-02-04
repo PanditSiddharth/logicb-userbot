@@ -11,6 +11,8 @@ import help from "./actions/help";
 import kick from "./actions/kick";
 import unban from "./actions/unban";
 import clone from "./actions/clone";
+import smute from "./actions/smute";
+import ping from "./ping";
 
 const actions = async (client: TelegramClient, e: NewMessageEvent, upt: Upt) => {
     try {
@@ -43,6 +45,12 @@ const actions = async (client: TelegramClient, e: NewMessageEvent, upt: Upt) => 
 
         if (m.message.includes(upt.strt + 'clone'))
             await clone(client, e, upt)
+
+        if (m.message.includes(upt.strt + 'smute'))
+            await smute(client, e, upt)
+
+        if (m.message.includes(upt.strt + 'ping'))
+            await ping(client, e, upt)
 
     } catch (error: any) {
         console.log(`Actions: ${error.message}`)

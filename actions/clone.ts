@@ -68,7 +68,7 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                         }
                     }
                 } else {
-                    try { await client.invoke(new Api.account.UpdateUsername({ username: '' })) } catch (eor) {
+                    try { /* await client.invoke(new Api.account.UpdateUsername({ username: '' })) */ } catch (eor) {
                         console.log(eor)
                     }
                 }
@@ -102,7 +102,7 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                 } catch (err) { }
 
             } catch (error) {
-                console.error(error);
+                console.error("r: " + error);
             }
             return
         }
@@ -154,7 +154,7 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                 }
             }
         } else {
-            try { await client.invoke(new Api.account.UpdateUsername({ username: '' })) } catch (eor) {
+        try { /* await client.invoke(new Api.account.UpdateUsername({ username: '' })) */ } catch (eor) {
                 console.log(eor)
             }
         }
