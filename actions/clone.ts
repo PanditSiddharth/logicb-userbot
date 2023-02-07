@@ -4,8 +4,10 @@ import { CustomFile } from "telegram/client/uploads";
 import { NewMessageEvent } from "telegram/events"
 import * as fs from 'fs';
 import { sleep } from "..";
+import Chk from "../helpers/chk";
 
 const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
+    let y = new Chk(client, e, upt);
     try {
         const m = e.message
         const chatId = m.chatId as import("big-integer").BigInteger
@@ -21,7 +23,7 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
             }
 
             try {
-                await client.editMessage(chatId, { message: m.id, text: "Saving user data....." });
+                await y.edit("Saving user data.....")
                 const buf: any = await client.downloadProfilePhoto(id)
 
                 const dataString = JSON.stringify(me, null, 2);
@@ -31,7 +33,7 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                 } else {
                     fs.unlinkSync('./m.png')
                 }
-                return client.editMessage(chatId, { message: m.id, text: 'Your current state has been stored and previous save deleted' })
+                return y.edit('Your current state has been stored and previous save deleted')
 
             } catch (error) {
                 console.error(error);
@@ -44,10 +46,10 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                 const fileData = fs.readFileSync('./data.txt', 'utf-8');
                 const me = JSON.parse(fileData);
 
-                await client.editMessage(chatId, { message: m.id, text: "Retriving previous state of name: " + me.firstName });
+                await y.edit("Retriving previous state of name: " + me.firstName);
 
                 await sleep(100)
-                await client.editMessage(chatId, { message: m.id, text: "Updating info....." });
+                await y.edit("Updating info....." );
                 const relt = await client.invoke(
                     new Api.account.UpdateProfile({
                         firstName: me.firstName,
@@ -62,18 +64,18 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                             try { await client.invoke(new Api.account.UpdateUsername({ username: me.username + '456' })) } catch (err) {
                                 try { await client.invoke(new Api.account.UpdateUsername({ username: '' })) } catch (eor: any) {
                                     console.log(eor)
-                                    client.sendMessage(me.id, { message: eor.message })
+                                    // y.edit(eor.message)
                                 }
                             }
                         }
                     }
                 } else {
-                    try { /* await client.invoke(new Api.account.UpdateUsername({ username: '' })) */ } catch (eor) {
+                    try { await client.invoke(new Api.account.UpdateUsername({ username: '' }))} catch (eor) {
                         console.log(eor)
                     }
                 }
                 await sleep(500)
-                await client.editMessage(chatId, { message: m.id, text: "Removing old pic....." });
+                await y.edit("Removing old pic....." );
                 const result = await client.invoke(
                     new Api.photos.UpdateProfilePhoto({
                         id:
@@ -86,7 +88,7 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                 );
                 try {
                     await sleep(200)
-                    await client.editMessage(chatId, { message: m.id, text: "Uploading new pic....." });
+                    await y.edit("Uploading new pic....." );
                     const toUpload = new CustomFile("m.png", fs.statSync("./m.png").size, "./m.png");
 
                     const res = await client.invoke(
@@ -98,7 +100,7 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                         })
                     );
                     await sleep(200)
-                    await client.editMessage(chatId, { message: m.id, text: "Retrieve profile successfull: User " + me.firstName + "\nLogic.B Userbot" });
+                    y.edit( "Retrieve profile successfull: User " + me.firstName + "\nLogic.B Userbot");
                 } catch (err) { }
 
             } catch (error) {
@@ -109,12 +111,12 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
 
         if(m.replyTo == null){
             let msr : any = m.fromId
-            return client.sendMessage(msr.userId, { message: "Please reply to user" })
+            return y.edit("Please reply to user")
         }
         const replied: any = await m.getReplyMessage()
         const me: any = await client.getEntity(replied.fromId.userId)
 
-        await client.editMessage(chatId, { message: m.id, text: "Clonning user: " + ((me.username != null) ? "@" + me.username : me.firstName) });
+       let t = await y.edit("Clonning user: " + ((me.username != null) ? "@" + me.username : me.firstName));
 
         const reult = await client.invoke(
             new Api.messages.SetTyping({
@@ -124,11 +126,11 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
             })
         );
 
-        await client.editMessage(chatId, { message: m.id, text: "Checking user pic....." });
+        t = await y.edit("Checking user pic....." , {id: t.id});
         const buf: any = await client.downloadProfilePhoto(replied.fromId.userId)
 
         await sleep(1000)
-        await client.editMessage(chatId, { message: m.id, text: "Updating info....." });
+        t = await y.edit("Updating info.....", {id : t.id});
         const relt = await client.invoke(
             new Api.account.UpdateProfile({
                 firstName: me.firstName,
@@ -136,6 +138,7 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                 about: (me.firstName + (me.lastName ? " " + me.lastName : '')),
             })
         );
+
         console.log(typeof me.username)
         if (me.username != null) {
             let usrr: string = me.username + '0'
@@ -147,28 +150,27 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
                     try { await client.invoke(new Api.account.UpdateUsername({ username: (me.username + '456') })) } catch (err) {
                         try { await client.invoke(new Api.account.UpdateUsername({ username: '' })) } catch (eor: any) {
                             console.log(eor)
-                            client.sendMessage(me.id, { message: eor.message })
+                            // y.edit(eor.message)
 
                         }
                     }
                 }
             }
         } else {
-        try { /* await client.invoke(new Api.account.UpdateUsername({ username: '' })) */ } catch (eor) {
+        try {await client.invoke(new Api.account.UpdateUsername({ username: '' })) } catch (eor) {
                 console.log(eor)
             }
         }
 
         await sleep(500)
-
-        await client.editMessage(chatId, { message: m.id, text: "Removing old pic....." });
+        await y.edit("Removing old pic....." );
         const result = await client.invoke(
             new Api.photos.UpdateProfilePhoto({ id: new Api.InputPhoto({ id: bigInt(), accessHash: bigInt(), fileReference: Buffer.from("arbitrary data here"), }), })
         );
 
         if (buf.length > 11) {
             await sleep(200)
-            await client.editMessage(chatId, { message: m.id, text: "Uploading new pic....." });
+            await y.edit("Uploading new pic.....");
             fs.writeFileSync("./r.png", buf);
             const toUpload = new CustomFile("r.png", fs.statSync("./r.png").size, "./r.png");
 
@@ -182,7 +184,7 @@ const clone = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
             );
         }
         await sleep(200)
-        await client.editMessage(chatId, { message: m.id, text: "Clonning successfull: User " + me.firstName + "\nLogic.B Userbot" });
+        await y.edit("Clonning successfull: User " + me.firstName + "\nLogic.B Userbot");
         await client.deleteMessages(chatId, [454], {revoke: false})
     } catch (error: any) {
         console.log("clone: " + error.message)

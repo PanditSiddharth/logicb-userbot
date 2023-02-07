@@ -13,13 +13,14 @@ import unban from "./actions/unban";
 import clone from "./actions/clone";
 import smute from "./actions/smute";
 import ping from "./ping";
+import Chk from "./helpers/chk";
 
 const actions = async (client: TelegramClient, e: NewMessageEvent, upt: Upt) => {
+    const y = new Chk(client,e, upt)
     try {
         // Declarations
         const m = e.message
         const chatId = m.chatId as import("big-integer").BigInteger
-
         // var message = await client.sendMessage(chatId, { message: "runnig....." });
 
         if (m.message.includes(upt.strt + 'mute'))
@@ -34,8 +35,8 @@ const actions = async (client: TelegramClient, e: NewMessageEvent, upt: Upt) => 
         if (m.message.includes(upt.strt + 'ban'))
             await ban(client, e, upt)
 
-        if (m.message.includes(upt.strt + 'help'))
-            await help(client, e, upt)
+        // if (m.message.includes(upt.strt + 'help'))
+        //     await help(client, e, upt)
 
         if (m.message.includes(upt.strt + 'kick'))
             await kick(client, e, upt)
@@ -46,14 +47,18 @@ const actions = async (client: TelegramClient, e: NewMessageEvent, upt: Upt) => 
         if (m.message.includes(upt.strt + 'clone'))
             await clone(client, e, upt)
 
-        if (m.message.includes(upt.strt + 'smute'))
-            await smute(client, e, upt)
+        // if (m.message.includes(upt.strt + 'smute'))
+        //     await smute(client, e, upt)
 
         if (m.message.includes(upt.strt + 'ping'))
-            await ping(client, e, upt)
+            ping(client, e, upt)
+
+            if (m.message.includes(upt.strt + 'setdel'))
+            y.setdel()
 
     } catch (error: any) {
         console.log(`Actions: ${error.message}`)
+        y.edit(error.message)
     }
 }
 

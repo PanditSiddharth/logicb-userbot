@@ -1,39 +1,55 @@
 import { Api, TelegramClient } from "telegram"
 import { NewMessageEvent } from "telegram/events"
 import { sleep } from ".."
+import Chk from "../helpers/chk"
 
 const mute = async (client: TelegramClient, e: NewMessageEvent, upt: any) => {
-    try {
+  const y = new Chk(client, e, upt)
+  try {
+    const m = e.message
+    let usr: any = await y.chk()
 
-        const m = e.message
-        const chatId = m.chatId as import("big-integer").BigInteger
-        var message = await client.sendMessage(chatId, { message: "mute command running....." });
+if (!m?.isChannel)
+     return await y.edit('This command is group/channels specific')
 
-        const result = await client.invoke(
-            new Api.channels.EditBanned({
-              channel: "username",
-              participant: "username",
-              bannedRights: new Api.ChatBannedRights({
-                untilDate: Math.floor(Date.now() / 1000) + (60 * 2), // 2 minutes from now
-                viewMessages: true,
-                sendMessages: false,
-                sendMedia: true,
-                sendStickers: true,
-                sendGifs: true,
-                sendGames: true,
-                sendInline: true,
-                sendPolls: true,
-                changeInfo: true,
-                inviteUsers: true,
-                pinMessages: true,
-              }),
-            })
-          );
+     let lt: any; try {
+      lt = await client.invoke(
+        new Api.channels.GetParticipant({
+          channel: m?.peerId,
+          participant: usr,
+        })
+      )
+    } catch (error) { }
+  
+  if (lt && (lt.participant.className == "ChannelParticipantCreator" || lt.participant.className == "ChannelParticipantAdmin")) {
+     return await y.edit(`I can't mute User is admin`)
+  }
 
-        //   new Api.ChatBannedRights(untilDate: new Date.now(11/11/2022))
+  if (lt && lt.participant.bannedRights && lt.participant.bannedRights.sendMessages == true)
+  return await y.edit(`User is already mute`)
+
+    let tim : any = await y.dtm()
+
+    const result = await client.invoke(
+        new Api.channels.EditBanned({
+          channel: await y.chat(),
+          participant: usr,
+          bannedRights: new Api.ChatBannedRights({
+            untilDate: Math.floor(Date.now() / 1000) + (tim && tim < 30 ? 30 : tim), // 1/2 minutes from now
+            viewMessages: false,
+            sendMessages: true,
+          }),
+        })
+      );
+
+      if (!lt)
+      return await y.edit(`User is not available in group [muted]`)
+      if(result)
+        await y.edit('User muted: ' +  (tim && tim >= 10 ? (tim >= 30 ? " until: " + tim + " seconds": '\nMuting user 30 seconds\nTg not allow to mute less than 30 seconds' ): ""));
 
     } catch (error: any) {
         console.log("Mute: " + error.message)
+        await y.gperr(error.message)
     }
 }
 

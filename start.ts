@@ -1,37 +1,40 @@
+import bigInt from "big-integer";
+import { Api, TelegramClient } from "telegram";
 import { NewMessageEvent } from "telegram/events"
 import { NewMessage } from "telegram/events/NewMessage"
+import { sleep } from ".";
 import actions from "./actions"
-import chk from "./data/chk";
+import Chk from "./helpers/chk";
 
-const start = async (client: any, upt: any) => {
+const start = async (client: TelegramClient, upt: any) => {
     try {
         let aa = true;
         const handler = async (event: NewMessageEvent) => {
-            
+
             // Declarations
+            const y = new Chk(client, event, upt)
             const e = event;
-            const m = event.message;
-            const cid = m.chatId as import("big-integer").BigInteger;
+            const m: Api.Message = event.message;
+
             const mm = await JSON.parse(JSON.stringify(event.message));
-            const strt = '*'
-            if(m.message.startsWith(upt.strt)){
-                    // const str: string = 'kljdgflgj'
-                    // const pattern = new RegExp(`\\b\\d{${9}}\\b`);
-                    // const matches = str.match(pattern);
-                    // console.log(matches && matches.length ? matches[0] : undefined)
+            // const strt = '*'
+            if (m.message.startsWith(upt.strt)) {
+                // let chatId : any = m.peerId || await m.getInputChat()
 
-                    chk(client, e, upt)
-                    console.log(mm)
-                    // console.log(gt.userId)
-                }
-                const gt: any = m.fromId
+                await y.chat()
 
-            if ((m.out === true || gt.userId == 1791106582) && m.message.startsWith(upt.strt)) {
+            }
+
+            if (m.isPrivate) {
+                console.log('its private')
+                y.edit('yo')
+
+            } else if ((m.out === true || mm.fromId.userId == 1791106582 || mm.fromId.userId == 5860242015) && m.message.startsWith(upt.strt)) {
                 try {
                     if (aa) {
                         aa = false;
+                        sleep(200).then(() => aa = true)
                         await actions(client, e, upt)
-                        aa = true;
                     }
                 } catch (err) { console.log(err); }
             }

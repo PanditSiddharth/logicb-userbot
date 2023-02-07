@@ -28,19 +28,18 @@ export const sleep = (t: number | undefined) => new Promise((resolve) => setTime
   const client = new TelegramClient(stringSession, 22199045, '39263ccc0fa63f4076e3b6948206ca7f', {
     connectionRetries: 5,
   });
-
   
 
 //                                         Starter (config)
     /* ************************************************************************************************** */
 
   await client.start({
-    phoneNumber: async () => await input.text("Please enter your number: "),
-    password: async () => await input.text("Please enter your password: "),
-    phoneCode: async () =>
-      await input.text("Please enter the code you received: "),
-    onError: (err: Error) => console.log(err),
-    // botAuthToken: "5918588428:AAFe5Zvg9D3GQHCyt_W0NAHGoOJtXvB1tW8",
+    // phoneNumber: async () => await input.text("Please enter your number: "),
+    // password: async () => await input.text("Please enter your password: "),
+    // phoneCode: async () =>
+    //   await input.text("Please enter the code you received: "),
+    // onError: (err: Error) => console.log(err),
+    botAuthToken: "5918588428:AAFe5Zvg9D3GQHCyt_W0NAHGoOJtXvB1tW8",
   });
   console.log("You should now be connected.");
                       console.log(client.session.save());
@@ -55,7 +54,7 @@ export const sleep = (t: number | undefined) => new Promise((resolve) => setTime
           let s = (i % 60).toString().padStart(2, '0')
           let m = (Math.floor(i / 60) % 60).toString().padStart(2, '0')
           let h = (Math.floor(Math.floor(i / 60) / 60)).toString().padStart(2, '0')
-          upt = { h, m, s, strt: '/'};
+          upt = { h, m, s, strt: '*'};
           await sleep(1000);
          
         }
