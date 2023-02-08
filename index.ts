@@ -16,7 +16,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const season = process.env.SEASON 
-// keep_alive()
+keep_alive()
 const stringSession = new StringSession(season);
 export const sleep = (t: number | undefined) => new Promise((resolve) => setTimeout(resolve, t));
 
